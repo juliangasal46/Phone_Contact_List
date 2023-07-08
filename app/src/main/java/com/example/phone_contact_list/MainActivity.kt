@@ -7,7 +7,9 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.provider.ContactsContract.Contacts
 import android.widget.TextView
+import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,14 +30,17 @@ class MainActivity : AppCompatActivity() {
             != PackageManager.PERMISSION_GRANTED){
             // We are gonna ask for permission cause or not granted or didnt accept
             requestPermissions(arrayOf(Manifest.permission.READ_CONTACTS),1)
+            Toast.makeText(this, "PERMISOS QUE FUERON PEDIDOS PORQUE NO HABÍA", Toast.LENGTH_SHORT).show()
             getContacts()
         } else{
+            Toast.makeText(this, "PERMISOS YA CONCENDIDOS", Toast.LENGTH_SHORT).show()
             // For lower marshmallow builds, we are asking the permission request
             getContacts() // Coge los permisos solo ? lol
         }
     }
 
-    private fun getContacts() {
+    fun getContacts(): ArrayList<String> {
+
         var contactArrayList = ArrayList<String>()
 
         // To pass al the contacts to the cursor
@@ -43,17 +48,33 @@ class MainActivity : AppCompatActivity() {
         null, null,null, null)
 
         // Now to fetch all the contacts from cursor into the text view
-        while (cursor!!.moveToNext()) {
-            val name: String = cursor.getString(cursor.getColumnIndex(
-                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)+1)
-            val mobile: String = cursor.getString(cursor.getColumnIndex(
-                ContactsContract.CommonDataKinds.Phone.NUMBER)+1)
+        // getColumIndex = -1 si no encuentra algo
 
-            val contactInfo = "$name: $mobile"
-            contactArrayList.add(contactInfo)
-            tvLoadContacts.setText("Funsiono")
+                val testName = cursor!!.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+                val testNumber = cursor!!.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+
+                if(testName >= 0 && testNumber >=0)
+                {
+                    while (cursor!!.moveToNext()) {
+
+                        val name: String = cursor.getString(testName)
+                        val mobile: String = cursor.getString(testNumber)
+
+                        val contactInfo = "$name: $mobile"
+                        contactArrayList.add(contactInfo)
+                    }
+
+                    for(i in contactArrayList){
+                        tvLoadContacts.text = "${tvLoadContacts.text}$i\n"
+                    }
+
+                } else {
+                    tvLoadContacts.setText("No se encontraron las columnas necesarias en el cursor")
+                }
+            return contactArrayList
         }
     }
+
 
     /*override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -67,4 +88,3 @@ class MainActivity : AppCompatActivity() {
             getContacts()
         }
     }*/
-}
