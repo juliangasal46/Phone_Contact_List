@@ -11,9 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class AdapterDatos extends RecyclerView.Adapter<AdapterDatos.ViewHolderDatos> {
+public class AdapterDatos extends RecyclerView.Adapter<AdapterDatos.ViewHolderDatos> implements View.OnClickListener {
 
     private ArrayList<String> listDatosNombre, listDatosNumber, listDatosFoto;
+    private View.OnClickListener listener;
 
     public AdapterDatos(ArrayList<String> listDatosNombre,
                         ArrayList<String> listDatosNumber,
@@ -28,6 +29,9 @@ public class AdapterDatos extends RecyclerView.Adapter<AdapterDatos.ViewHolderDa
         // Enlaza nuestro adaptador con el contactPaint.xml
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.contactpaint, null , false);
+
+        view.setOnClickListener(this);
+
         return new ViewHolderDatos(view);
     }
 
@@ -36,13 +40,25 @@ public class AdapterDatos extends RecyclerView.Adapter<AdapterDatos.ViewHolderDa
         // Se encarga de la comunicación entre el ViewHolder y el adaptador, usaremos el objeto Holder
 
         holder.asignarDatos(listDatosNombre.get(position),
-                    listDatosNumber.get(position),
-                    listDatosFoto.get(position));
+                listDatosNumber.get(position),
+                listDatosFoto.get(position));
     }
 
     @Override
     public int getItemCount() {
         return listDatosNombre.size(); // Mismo tamaño , porque todos los contacts tienen nombre
+    }
+
+    // To detect if clicked
+    @Override
+    public void onClick(View v) {
+        if(listener != null){
+            listener.onClick(v); // Check if listener is not null
+        }
+    }
+
+    public void setOnClickListener(View.OnClickListener listener){
+        this.listener = listener;
     }
 
     public class ViewHolderDatos extends RecyclerView.ViewHolder{

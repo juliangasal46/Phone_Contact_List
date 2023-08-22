@@ -1,12 +1,14 @@
 package com.example.phone_contact_list;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,15 +78,26 @@ public class MainActivity extends AppCompatActivity {
 
                     if(foto!=null){
                         listDatosFoto.add(foto);
-                        // Mandar datos al adapter datos
+                        // Send data to the adapter
                         AdapterDatos datos = new AdapterDatos (listDatosNombre, listDatosNumber, listDatosFoto);
+                        Toast.makeText(getApplicationContext(), "Rabo", Toast.LENGTH_SHORT).show();
                         recycler.setAdapter(datos);
 
-                    } else { //Load default picture
-                        // Mandar datos al adapter datos
+                    } else {
+                        //Load default picture
                         listDatosFoto.add("file:///android_res/drawable/vector_person.png");
 
                         AdapterDatos datos = new AdapterDatos (listDatosNombre, listDatosNumber, listDatosFoto);
+
+                        datos.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                int clickedPosition = recycler.getChildAdapterPosition(v);
+                                // We use the child adapter to get the data where we clicked
+                                openContactInfo(listDatosNombre.get(clickedPosition), listDatosNumber.get(clickedPosition));
+                            }
+                        });
+
                         recycler.setAdapter(datos);
                     }
                 }
@@ -94,5 +107,13 @@ public class MainActivity extends AppCompatActivity {
 
             cursor.close();
         }
+    }
+
+
+    public void openContactInfo(String name, String number){
+        Intent intent = new Intent(this, RecyclerViewSelectionContact.class);
+        intent.putExtra("Name", name);
+        intent.putExtra("Number", number);
+        startActivity(intent);
     }
 }
