@@ -32,7 +32,7 @@
                 android:layout_marginTop="30dp"
                 android:outlineProvider="background"
                 android:scaleType="centerCrop"
-                android:src="@drawable/policia_boton"/>
+                android:src="@drawable/vector_person"/>
 
         <LinearLayout
             android:layout_width="match_parent"
